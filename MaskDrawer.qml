@@ -21,6 +21,10 @@ Item {
     readonly property int _selectionButton: Qt.LeftButton
     readonly property int _unselectionButton: Qt.RightButton
 
+    function saveMask(filename) {
+        _canvas.save(filename);
+    }
+
     Image {
         id: viewer
 
@@ -96,7 +100,6 @@ Item {
         }
 
         function _drawLine(_ctx) {
-            //_ctx.putImageData(imageData, 0, 0);
             _ctx.lineTo(curr.x, curr.y);
             _ctx.stroke();
         }
@@ -212,18 +215,8 @@ Item {
         }
 
         onWheel: {
-            console.log("WHeel angle delta", wheel.angleDelta);
-            if (wheel.angleDelta.y > 0) {
-                root.brushRadius = Math.min(100, root.brushRadius + 10);
-            } else {
-                root.brushRadius = Math.max(10, root.brushRadius - 10);
-            }
+            root.brushRadius = Math.max(10, Math.min(100, root.brushRadius + (wheel.angleDelta.y / 12)));
             _cursorField.drawCursor(mouseX, mouseY);
-        }
-
-        onWidthChanged: {
-        }
-        onHeightChanged:  {
         }
     }
 }

@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>MainBar.qml</file>
         <file>MaskDrawer.qml</file>
+        <file>BottomBar.qml</file>
     </qresource>
 </RCC>

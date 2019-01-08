@@ -11,8 +11,8 @@ ApplicationWindow {
 
     visible: true
 
-    width: 1024
-    height: 768
+    width: 1200
+    height: 900
     maximumHeight: height
     maximumWidth: width
     minimumHeight: height
@@ -62,11 +62,22 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: menu.bottom
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.bottom: bottomBar.top
 
         pixelGridSize: menu.selectedPixelGridSize
 
         model: root.selectionModel
         manager: root.fileManager
+    }
+
+    BottomBar {
+        id: bottomBar
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+
+        onSaveClicked: {
+            drawer.saveMask('mask.png');
+        }
     }
 }
