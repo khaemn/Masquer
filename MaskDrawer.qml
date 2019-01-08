@@ -22,34 +22,34 @@ Item {
     readonly property int _unselectionButton: Qt.RightButton
 
     function saveMask(filename) {
-        _canvas.save(filename);
+        _maskArea.save(filename);
     }
 
-    Image {
-        id: viewer
+//    Image {
+//        id: viewer
 
-        readonly property real dpX: paintedWidth / sourceSize.width
-        readonly property real dpY: paintedHeight / sourceSize.height
+//        readonly property real dpX: paintedWidth / sourceSize.width
+//        readonly property real dpY: paintedHeight / sourceSize.height
 
-        readonly property int horizontalChunks: Math.round(sourceSize.width / root.pixelGridSize)
-        readonly property int verticalChunks: Math.round(sourceSize.height / root.pixelGridSize)
+//        readonly property int horizontalChunks: Math.round(sourceSize.width / root.pixelGridSize)
+//        readonly property int verticalChunks: Math.round(sourceSize.height / root.pixelGridSize)
 
-        anchors.fill: parent
-        source: root.manager.imagePath
+//        anchors.fill: parent
+//        source: root.manager.imagePath
 
-        fillMode: Image.PreserveAspectFit
+//        fillMode: Image.PreserveAspectFit
 
-        onStatusChanged: {
-            if (status === Image.Ready) {
-                root._statusText = "Loaded\n"
-                        + source
-                        + "\n" + sourceSize.width + "x" + sourceSize.height
-            }
-        }
-    }
+//        onStatusChanged: {
+//            if (status === Image.Ready) {
+//                root._statusText = "Loaded\n"
+//                        + source
+//                        + "\n" + sourceSize.width + "x" + sourceSize.height
+//            }
+//        }
+//    }
 
     Canvas {
-        id: _canvas
+        id: _maskArea
 
         readonly property string action_line: "line"
         readonly property string action_erase: "erase"
@@ -70,7 +70,7 @@ Item {
             curr.x = _x;
             curr.y = _y;
 
-            _canvas.requestPaint();
+            _maskArea.requestPaint();
         }
 
         function startAt(_x, _y) {
@@ -78,22 +78,22 @@ Item {
 
             imageData = _ctx.getImageData(0,
                                           0,
-                                          _canvas.width,
-                                          _canvas.height
+                                          _maskArea.width,
+                                          _maskArea.height
                                           )
             _ctx.reset();
 
-            _ctx.strokeStyle = "yellow";
+            _ctx.strokeStyle = "magenta";
             _ctx.lineJoin = _ctx.lineCap = "round"
             _ctx.lineWidth = root.brushRadius * 2;
             _ctx.moveTo(_x, _y)
-            _canvas.requestPaint();
+            _maskArea.requestPaint();
             // Pay attention: dirty rectangle is NOT optional but mandatory argument!
             _ctx.putImageData(imageData, 0, 0,
                               0,
                               0,
-                              _canvas.width,
-                              _canvas.height);
+                              _maskArea.width,
+                              _maskArea.height);
 
             prev.x = curr.x = _x;
             prev.y = curr.y = _y;
@@ -118,6 +118,7 @@ Item {
         }
 
         anchors.fill: parent
+        opacity: 0.3
 
         onPaint: {
             var ctx = getContext("2d")
@@ -142,7 +143,7 @@ Item {
     Canvas {
         id: _cursorField
 
-        anchors.fill: _canvas
+        anchors.fill: _maskArea
 
         property int cursorX: 0
         property int cursorY: 0
@@ -190,23 +191,23 @@ Item {
             _cursorField.drawCursor(mouseX, mouseY);
 
             if (pressedButtons & (Qt.LeftButton)) {
-                _canvas.doAction(_canvas.action_line, mouseX, mouseY);
+                _maskArea.doAction(_maskArea.action_line, mouseX, mouseY);
             }
             if (pressedButtons & (Qt.RightButton)) {
-                _canvas.doAction(_canvas.action_erase, mouseX, mouseY);
+                _maskArea.doAction(_maskArea.action_erase, mouseX, mouseY);
             }
         }
 
         onCanceled: pressed
 
         onPressed: {
-            _canvas.startAt(mouseX, mouseY);
+            _maskArea.startAt(mouseX, mouseY);
 
             if (pressedButtons & (Qt.LeftButton)) {
-                _canvas.doAction(_canvas.action_line, mouseX+1, mouseY);
+                _maskArea.doAction(_maskArea.action_line, mouseX+1, mouseY);
             }
             if (pressedButtons & (Qt.RightButton)) {
-                _canvas.doAction(_canvas.action_erase, mouseX+1, mouseY);
+                _maskArea.doAction(_maskArea.action_erase, mouseX+1, mouseY);
             }
         }
 

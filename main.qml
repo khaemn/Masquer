@@ -18,7 +18,7 @@ ApplicationWindow {
     minimumHeight: height
     minimumWidth: width
 
-    title: qsTr("AImageClicker")
+    title: qsTr("Masquer")
 
     color: "darkgrey"
 
@@ -56,13 +56,33 @@ ApplicationWindow {
         value: menu.selectedPixelGridSize
     }
 
-    MaskDrawer {
-        id: drawer
+    Image {
+        id: viewer
 
         anchors.left: parent.left
         anchors.top: menu.bottom
         anchors.right: parent.right
         anchors.bottom: bottomBar.top
+
+        source: "file:///D:/__PROJECTS/PythonNN/masquer/Masquer/road.jpg"
+        fillMode: Image.PreserveAspectFit
+    }
+
+    Rectangle {
+        id: imageArea
+
+        anchors.centerIn: viewer
+        height: viewer.paintedHeight
+        width: viewer.paintedWidth
+
+        color: "green"
+        opacity: 0.1
+    }
+
+    MaskDrawer {
+        id: drawer
+
+        anchors.fill: imageArea
 
         pixelGridSize: menu.selectedPixelGridSize
 
@@ -72,6 +92,7 @@ ApplicationWindow {
 
     BottomBar {
         id: bottomBar
+
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.right: parent.right
