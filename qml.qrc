@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainBar.qml</file>
+        <file>MaskDrawer.qml</file>
+    </qresource>
+</RCC>
