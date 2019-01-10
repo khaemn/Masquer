@@ -50,39 +50,13 @@ ApplicationWindow {
         }
     }
 
-    Binding {
-        target: root.fileManager
-        property: "pixelGridSize"
-        value: menu.selectedPixelGridSize
-    }
-
-    Image {
-        id: viewer
+    MaskDrawer {
+        id: drawer
 
         anchors.left: parent.left
         anchors.top: menu.bottom
         anchors.right: parent.right
         anchors.bottom: bottomBar.top
-
-        source: "file:///D:/__PROJECTS/PythonNN/masquer/Masquer/road.jpg"
-        fillMode: Image.PreserveAspectFit
-    }
-
-    Rectangle {
-        id: imageArea
-
-        anchors.centerIn: viewer
-        height: viewer.paintedHeight
-        width: viewer.paintedWidth
-
-        color: "green"
-        opacity: 0.1
-    }
-
-    MaskDrawer {
-        id: drawer
-
-        anchors.fill: imageArea
 
         pixelGridSize: menu.selectedPixelGridSize
 
@@ -98,7 +72,7 @@ ApplicationWindow {
         anchors.right: parent.right
 
         onSaveClicked: {
-            drawer.saveMask('mask.png');
+            drawer.saveMask();
         }
     }
 }

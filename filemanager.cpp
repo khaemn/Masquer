@@ -6,6 +6,7 @@
 #include <QDir>
 
 static const QString MODEL_EXTENSION = ".txt";
+static const QString MASKS_SUBDIR_NAME = "masks";
 static const QStringList EXTENSION_FILTERS = { "*.png", "*.jpg", "*.jpeg" };
 
 
@@ -25,13 +26,13 @@ void FileManager::openFile(const QString &file)
         return;
     }
 
-    auto path = QUrl(file).toLocalFile();
+    auto url = QUrl(file);
+    auto path = url.toLocalFile();
 
     QImageReader reader(path);
     const QSize sizeOfImage = reader.size();
     const int height = sizeOfImage.height();
     const int width = sizeOfImage.width();
-
 
     qDebug() << "Loaded an image " << path << " with size " << width << "x" << height;
 
@@ -45,6 +46,8 @@ void FileManager::openFile(const QString &file)
     setTotalImages(m_availableImages.size());
     setCurrentImageNumber(m_currentImageFileNumber);
     setImagePath(file);
+    setImageFileName(url.fileName());
+
 }
 
 void FileManager::openDir(const QString &dir)
@@ -64,6 +67,14 @@ void FileManager::openDir(const QString &dir)
         return;
     }
 
+    // If there is no "masks" subdir in the opened dir - create it.
+    auto subdirs = imageFolder.entryList(QDir::Dirs);
+    if (subdirs.empty() || subdirs.indexOf(MASKS_SUBDIR_NAME) < 0)
+    {
+        imageFolder.mkdir(MASKS_SUBDIR_NAME);
+    }
+    setMaskPath(dirPath + "/" + MASKS_SUBDIR_NAME + "/");
+
     for (const auto file : availableFiles)
     {
         m_availableImages.append(QUrl::fromLocalFile(imageFolder.path() + "/" + file).toString());
@@ -75,7 +86,7 @@ void FileManager::openDir(const QString &dir)
 
 void FileManager::loadNextImage()
 {
-    saveSelectionFile();
+    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
@@ -86,7 +97,7 @@ void FileManager::loadNextImage()
 
 void FileManager::loadPrevImage()
 {
-    saveSelectionFile();
+    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
@@ -97,7 +108,7 @@ void FileManager::loadPrevImage()
 
 void FileManager::loadImageByIndex(int index)
 {
-    saveSelectionFile();
+    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
@@ -106,7 +117,7 @@ void FileManager::loadImageByIndex(int index)
     openFile(m_availableImages.at(m_currentImageFileNumber));
 }
 
-void FileManager::saveSelectionFile()
+void FileManager::saveMask()
 {
     if (m_imagePath.isEmpty())
     {
@@ -147,6 +158,34 @@ int FileManager::currentImageNumber() const
         return 0;
     }
     return m_currentImageFileNumber + 1; // To display 0 as 1 on UI
+}
+
+void FileManager::setImageFileName(QString imageFileName)
+{
+    if (m_imageFileName == imageFileName)
+        return;
+
+    m_imageFileName = imageFileName;
+    emit imageFileNameChanged(m_imageFileName);
+}
+
+QString FileManager::imageFileName() const
+{
+    return m_imageFileName;
+}
+
+QString FileManager::maskPath() const
+{
+    return m_maskPath;
+}
+
+void FileManager::setMaskPath(QString maskPath)
+{
+    if (m_maskPath == maskPath)
+        return;
+
+    m_maskPath = maskPath;
+    emit maskPathChanged(m_maskPath);
 }
 
 void FileManager::setImagePath(QString imagePath)

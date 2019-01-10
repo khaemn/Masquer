@@ -21,32 +21,34 @@ Item {
     readonly property int _selectionButton: Qt.LeftButton
     readonly property int _unselectionButton: Qt.RightButton
 
-    function saveMask(filename) {
-        _maskArea.save(filename);
+    function saveMask() {
+        var savingPath = root.manager.maskPath + root.manager.imageFileName;
+        console.log("Saving mask to", savingPath);
+        _maskArea.save(savingPath);
     }
 
-//    Image {
-//        id: viewer
+    Image {
+        id: viewer
 
-//        readonly property real dpX: paintedWidth / sourceSize.width
-//        readonly property real dpY: paintedHeight / sourceSize.height
+        readonly property real dpX: paintedWidth / sourceSize.width
+        readonly property real dpY: paintedHeight / sourceSize.height
 
-//        readonly property int horizontalChunks: Math.round(sourceSize.width / root.pixelGridSize)
-//        readonly property int verticalChunks: Math.round(sourceSize.height / root.pixelGridSize)
+        readonly property int horizontalChunks: Math.round(sourceSize.width / root.pixelGridSize)
+        readonly property int verticalChunks: Math.round(sourceSize.height / root.pixelGridSize)
 
-//        anchors.fill: parent
-//        source: root.manager.imagePath
+        anchors.fill: parent
+        source: root.manager.imagePath
 
-//        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectFit
 
-//        onStatusChanged: {
-//            if (status === Image.Ready) {
-//                root._statusText = "Loaded\n"
-//                        + source
-//                        + "\n" + sourceSize.width + "x" + sourceSize.height
-//            }
-//        }
-//    }
+        onStatusChanged: {
+            if (status === Image.Ready) {
+                root._statusText = "Loaded\n"
+                        + source
+                        + "\n" + sourceSize.width + "x" + sourceSize.height
+            }
+        }
+    }
 
     Canvas {
         id: _maskArea
@@ -83,7 +85,7 @@ Item {
                                           )
             _ctx.reset();
 
-            _ctx.strokeStyle = "magenta";
+            _ctx.strokeStyle = "white";
             _ctx.lineJoin = _ctx.lineCap = "round"
             _ctx.lineWidth = root.brushRadius * 2;
             _ctx.moveTo(_x, _y)
@@ -118,7 +120,7 @@ Item {
         }
 
         anchors.fill: parent
-        opacity: 0.3
+        opacity: 0.4
 
         onPaint: {
             var ctx = getContext("2d")

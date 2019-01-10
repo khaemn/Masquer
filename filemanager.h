@@ -13,7 +13,12 @@ class FileManager : public QObject
 {
     Q_OBJECT
 
+    // Original image file path
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
+    Q_PROPERTY(QString imageFileName READ imageFileName WRITE setImageFileName NOTIFY imageFileNameChanged)
+    // Image mask (grayscale image) file path
+    Q_PROPERTY(QString maskPath READ maskPath WRITE setMaskPath NOTIFY maskPathChanged)
+
     Q_PROPERTY(int pixelGridSize READ pixelGridSize WRITE setPixelGridSize NOTIFY pixelGridSizeChanged)
     Q_PROPERTY(int totalImages READ totalImages WRITE setTotalImages NOTIFY totalImagesChanged)
     Q_PROPERTY(int currentImageNumber READ currentImageNumber WRITE setCurrentImageNumber NOTIFY currentImageIndexChanged)
@@ -21,6 +26,8 @@ class FileManager : public QObject
     void setTotalImages(int totalImages);
     void setCurrentImageNumber(int currentImageNumber);
     void setImagePath(QString imagePath);
+    void setImageFileName(QString imageFileName);
+    void setMaskPath(QString maskPath);
     void setPixelGridSize(int pixelGridSize);
 
 public:
@@ -35,10 +42,12 @@ public:
     Q_INVOKABLE void loadPrevImage();
     Q_INVOKABLE void loadImageByIndex(int index);
 
-    Q_INVOKABLE void saveSelectionFile();
+    Q_INVOKABLE void saveMask();
 
 
     QString imagePath() const;
+    QString imageFileName() const;
+    QString maskPath() const;
     int pixelGridSize() const;
     int totalImages() const;
     int currentImageNumber() const;
@@ -49,6 +58,8 @@ signals:
     void pixelGridSizeChanged(int pixelGridSize);
     void totalImagesChanged(int totalImages);
     void currentImageIndexChanged(int currentImageNumber);
+    void maskPathChanged(QString maskPath);
+    void imageFileNameChanged(QString imageFileName);
 
 private:
     bool writeModelToFile(const QString& filename);
@@ -61,6 +72,8 @@ private:
     QStringList m_availableImages;
     int m_currentImageFileNumber = -1;
     int m_totalImages = 0;
+    QString m_maskPath;
+    QString m_imageFileName;
 };
 
 #endif // FILEMANAGER_H
