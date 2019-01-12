@@ -16,8 +16,11 @@ class FileManager : public QObject
     // Original image file path
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(QString imageFileName READ imageFileName WRITE setImageFileName NOTIFY imageFileNameChanged)
-    // Image mask (grayscale image) file path
-    Q_PROPERTY(QString maskPath READ maskPath WRITE setMaskPath NOTIFY maskPathChanged)
+    // Image mask (grayscale image) file paths. Until the Canvas does
+    // the saving itself, it needs another path format, then the loading path.
+    // TODO: it is idiotic situation, needs to be fixed asap.
+    Q_PROPERTY(QString maskLoadingPath READ maskLoadingPath WRITE setMaskLoadingPath NOTIFY maskLoadingPathChanged)
+    Q_PROPERTY(QString maskSavingPath READ maskSavingPath WRITE setMaskSavingPath NOTIFY maskSavingPathChanged)
 
     Q_PROPERTY(int pixelGridSize READ pixelGridSize WRITE setPixelGridSize NOTIFY pixelGridSizeChanged)
     Q_PROPERTY(int totalImages READ totalImages WRITE setTotalImages NOTIFY totalImagesChanged)
@@ -27,7 +30,7 @@ class FileManager : public QObject
     void setCurrentImageNumber(int currentImageNumber);
     void setImagePath(QString imagePath);
     void setImageFileName(QString imageFileName);
-    void setMaskPath(QString maskPath);
+    void setMaskLoadingPath(QString maskLoadingPath);
     void setPixelGridSize(int pixelGridSize);
 
 public:
@@ -42,15 +45,17 @@ public:
     Q_INVOKABLE void loadPrevImage();
     Q_INVOKABLE void loadImageByIndex(int index);
 
-    Q_INVOKABLE void saveMask();
-
-
     QString imagePath() const;
     QString imageFileName() const;
-    QString maskPath() const;
+    QString maskLoadingPath() const;
     int pixelGridSize() const;
     int totalImages() const;
     int currentImageNumber() const;
+
+    QString maskSavingPath() const;
+
+public slots:
+    void setMaskSavingPath(QString maskSavingPath);
 
 signals:
 
@@ -58,8 +63,10 @@ signals:
     void pixelGridSizeChanged(int pixelGridSize);
     void totalImagesChanged(int totalImages);
     void currentImageIndexChanged(int currentImageNumber);
-    void maskPathChanged(QString maskPath);
+    void maskLoadingPathChanged(QString maskLoadingPath);
     void imageFileNameChanged(QString imageFileName);
+
+    void maskSavingPathChanged(QString maskSavingPath);
 
 private:
     bool writeModelToFile(const QString& filename);
@@ -74,6 +81,7 @@ private:
     int m_totalImages = 0;
     QString m_maskPath;
     QString m_imageFileName;
+    QString m_maskSavingPath;
 };
 
 #endif // FILEMANAGER_H

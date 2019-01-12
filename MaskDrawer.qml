@@ -6,8 +6,6 @@ import CppBackend 1.0
 Item {
     id: root
 
-    // TODO: bind to corresp. control
-    property int pixelGridSize: 100
     property int brushRadius: 50
 
     property var model
@@ -22,9 +20,14 @@ Item {
     readonly property int _unselectionButton: Qt.RightButton
 
     function saveMask() {
-        var savingPath = root.manager.maskPath + root.manager.imageFileName;
-        console.log("Saving mask to", savingPath);
-        _maskArea.save(savingPath);
+        console.log("Saving mask to", root.manager.maskLoadingPath);
+        _maskArea.save(root.manager.maskSavingPath);
+    }
+
+    function loadMask() {
+        console.log("Loading mask from", root.manager.maskLoadingPath);
+        _maskArea.unloadImage(root.manager.maskLoadingPath);
+        _maskArea.loadImage(root.manager.maskLoadingPath);
     }
 
     Image {
@@ -46,8 +49,20 @@ Item {
                 root._statusText = "Loaded\n"
                         + source
                         + "\n" + sourceSize.width + "x" + sourceSize.height
+                loadMask();
             }
         }
+    }
+
+    Rectangle {
+        id: imageArea
+
+        anchors.centerIn: viewer
+        height: viewer.paintedHeight
+        width: viewer.paintedWidth
+
+        color: "green"
+        opacity: 0.1
     }
 
     Canvas {
@@ -76,7 +91,7 @@ Item {
         }
 
         function startAt(_x, _y) {
-            var _ctx = getContext("2d")
+            var _ctx = getContext("2d");
 
             imageData = _ctx.getImageData(0,
                                           0,
@@ -115,12 +130,31 @@ Item {
             _ctx.globalCompositeOperation = 'source-over'
         }
 
-        function _clear(_ctx) {
-            _ctx.reset();
+        function clear() {
+            var ctx = getContext("2d");
+            ctx.reset();
         }
 
-        anchors.fill: parent
+        function loadMask() {
+            var ctx = getContext("2d");
+            ctx.reset();
+            ctx.drawImage(root.manager.maskLoadingPath,
+                          0,
+                          0,
+                          _maskArea.width,
+                          _maskArea.height)
+            console.log("Drawing the image", root.manager.maskLoadingPath);
+            requestPaint();
+        }
+
+        onImageLoaded: {
+            _maskArea.loadMask();
+        }
+
+
+        anchors.fill: imageArea
         opacity: 0.4
+
 
         onPaint: {
             var ctx = getContext("2d")
@@ -133,7 +167,7 @@ Item {
                     _eraseLine(ctx);
                 }
                 if (action == action_clear) {
-                    _clear(ctx);
+                    clear();
                 }
             }
             prev.x = curr.x;
@@ -161,7 +195,8 @@ Item {
             var ctx = getContext("2d")
             ctx.reset();
             ctx.strokeStyle = "magenta";
-            ctx.arc(cursorX, cursorY, cursorRadius, 0, Math.PI * 2);
+            // +1 to the cursor radius is needed to display actual zone of editing.
+            ctx.arc(cursorX, cursorY, cursorRadius + 1, 0, Math.PI * 2);
             ctx.stroke();
         }
     }
@@ -177,7 +212,7 @@ Item {
         property int prevX: 0
         property int prevY: 0
 
-        anchors.fill: parent
+        anchors.fill: imageArea
 
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton

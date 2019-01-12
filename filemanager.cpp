@@ -36,18 +36,20 @@ void FileManager::openFile(const QString &file)
 
     qDebug() << "Loaded an image " << path << " with size " << width << "x" << height;
 
-    if (!loadFileToModel(path)) {
-        const auto gridWidth = roundf(static_cast<float>(width) / m_pixelGridSize);
-        const auto gridHeight = roundf(static_cast<float>(height) / m_pixelGridSize);
-        qDebug() << "Initing model grid with size " << m_pixelGridSize << ":" << gridWidth << "x" << gridHeight;
-        _model->init(gridWidth, gridHeight);
-    }
+    QString mask_filename = url.fileName();
+    mask_filename.replace("jpg", "png");
+    mask_filename.replace("jpeg", "png");
+    mask_filename = QString(MASKS_SUBDIR_NAME + "/" + mask_filename);
 
+    QString mask_path = file;
+    setMaskLoadingPath(mask_path.replace(url.fileName(), mask_filename));
+    mask_path = path;
+    setMaskSavingPath(mask_path.replace(url.fileName(), mask_filename));
     setTotalImages(m_availableImages.size());
     setCurrentImageNumber(m_currentImageFileNumber);
+    setImagePath("");
     setImagePath(file);
     setImageFileName(url.fileName());
-
 }
 
 void FileManager::openDir(const QString &dir)
@@ -73,7 +75,8 @@ void FileManager::openDir(const QString &dir)
     {
         imageFolder.mkdir(MASKS_SUBDIR_NAME);
     }
-    setMaskPath(dirPath + "/" + MASKS_SUBDIR_NAME + "/");
+
+    setMaskLoadingPath(dirPath + "/" + MASKS_SUBDIR_NAME + "/");
 
     for (const auto file : availableFiles)
     {
@@ -86,7 +89,6 @@ void FileManager::openDir(const QString &dir)
 
 void FileManager::loadNextImage()
 {
-    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
@@ -97,7 +99,6 @@ void FileManager::loadNextImage()
 
 void FileManager::loadPrevImage()
 {
-    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
@@ -108,32 +109,12 @@ void FileManager::loadPrevImage()
 
 void FileManager::loadImageByIndex(int index)
 {
-    saveMask();
     if (m_availableImages.isEmpty())
     {
         return;
     }
     setCurrentImageNumber(std::min((m_availableImages.size() - 1), std::max(0, (index - 1))));
     openFile(m_availableImages.at(m_currentImageFileNumber));
-}
-
-void FileManager::saveMask()
-{
-    if (m_imagePath.isEmpty())
-    {
-        // Nothing to dave if the filename is empty.
-        return;
-    }
-    QUrl url(m_imagePath);
-    QFileInfo pathToImage(url.toLocalFile());
-
-    // Extracting the file name only
-    const auto imageFilename = pathToImage.fileName();
-    auto withoutExtension = imageFilename.mid(0, imageFilename.indexOf('.'));
-    const auto selectionFilename = withoutExtension.append(MODEL_EXTENSION);
-    auto fullpath = pathToImage.absoluteDir().path().append("/" + selectionFilename);
-
-    writeModelToFile(fullpath);
 }
 
 QString FileManager::imagePath() const
@@ -160,6 +141,20 @@ int FileManager::currentImageNumber() const
     return m_currentImageFileNumber + 1; // To display 0 as 1 on UI
 }
 
+QString FileManager::maskSavingPath() const
+{
+    return m_maskSavingPath;
+}
+
+void FileManager::setMaskSavingPath(QString maskSavingPath)
+{
+    if (m_maskSavingPath == maskSavingPath)
+        return;
+
+    m_maskSavingPath = maskSavingPath;
+    emit maskSavingPathChanged(m_maskSavingPath);
+}
+
 void FileManager::setImageFileName(QString imageFileName)
 {
     if (m_imageFileName == imageFileName)
@@ -174,18 +169,18 @@ QString FileManager::imageFileName() const
     return m_imageFileName;
 }
 
-QString FileManager::maskPath() const
+QString FileManager::maskLoadingPath() const
 {
     return m_maskPath;
 }
 
-void FileManager::setMaskPath(QString maskPath)
+void FileManager::setMaskLoadingPath(QString maskPath)
 {
     if (m_maskPath == maskPath)
         return;
 
     m_maskPath = maskPath;
-    emit maskPathChanged(m_maskPath);
+    emit maskLoadingPathChanged(m_maskPath);
 }
 
 void FileManager::setImagePath(QString imagePath)

@@ -58,8 +58,6 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.bottom: bottomBar.top
 
-        pixelGridSize: menu.selectedPixelGridSize
-
         model: root.selectionModel
         manager: root.fileManager
     }
