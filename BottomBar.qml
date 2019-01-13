@@ -10,6 +10,9 @@ Rectangle {
     id: root
 
     signal saveClicked
+    signal maskSubdirEntered(string path)
+
+    property string maskSubfolderPath
 
     height: 50
 
@@ -30,6 +33,25 @@ Rectangle {
             }
         }
 
+        Text {
+            text: "Relative path to masks subfolder:  /"
+            width: contentWidth
+        }
 
+        TextInput {
+            id: maskSubdirRelativePath
+
+            selectByMouse: true
+            width: 50
+            text: root.maskSubfolderPath
+            onEditingFinished: {
+                root.maskSubdirEntered(text);
+            }
+        }
+
+        Item {
+            id: spacer
+            Layout.fillWidth: true
+        }
     }
 }

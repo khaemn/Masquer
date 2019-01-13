@@ -13,14 +13,17 @@ class FileManager : public QObject
 {
     Q_OBJECT
 
-    // Original image file path
+    /// Original image file path
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(QString imageFileName READ imageFileName WRITE setImageFileName NOTIFY imageFileNameChanged)
-    // Image mask (grayscale image) file paths. Until the Canvas does
-    // the saving itself, it needs another path format, then the loading path.
+    /// Image mask (grayscale image) file paths. Until the Canvas does
+    /// the saving itself, it needs another path format, then the loading path.
     // TODO: it is idiotic situation, needs to be fixed asap.
     Q_PROPERTY(QString maskLoadingPath READ maskLoadingPath WRITE setMaskLoadingPath NOTIFY maskLoadingPathChanged)
     Q_PROPERTY(QString maskSavingPath READ maskSavingPath WRITE setMaskSavingPath NOTIFY maskSavingPathChanged)
+
+    /// The property holds a relative path to subfolder where the masks are stored
+    Q_PROPERTY(QString maskSubfolderRelPath READ maskSubfolderRelPath WRITE setMaskSubfolderRelPath NOTIFY maskSubfolderRelPathChanged)
 
     Q_PROPERTY(int pixelGridSize READ pixelGridSize WRITE setPixelGridSize NOTIFY pixelGridSizeChanged)
     Q_PROPERTY(int totalImages READ totalImages WRITE setTotalImages NOTIFY totalImagesChanged)
@@ -54,8 +57,12 @@ public:
 
     QString maskSavingPath() const;
 
+    QString maskSubfolderRelPath() const;
+
 public slots:
     void setMaskSavingPath(QString maskSavingPath);
+
+    void setMaskSubfolderRelPath(QString maskSubfolderRelPath);
 
 signals:
 
@@ -67,6 +74,8 @@ signals:
     void imageFileNameChanged(QString imageFileName);
     void maskSavingPathChanged(QString maskSavingPath);
     void newFileIsAboutToBeLoaded();
+
+    void maskSubfolderRelPathChanged(QString maskSubfolderRelPath);
 
 private:
     bool writeModelToFile(const QString& filename);
@@ -82,6 +91,7 @@ private:
     QString m_maskPath;
     QString m_imageFileName;
     QString m_maskSavingPath;
+    QString m_masks_subdir_path = "masks";
 };
 
 #endif // FILEMANAGER_H

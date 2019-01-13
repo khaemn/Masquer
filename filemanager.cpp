@@ -6,7 +6,6 @@
 #include <QDir>
 
 static const QString MODEL_EXTENSION = ".txt";
-static const QString MASKS_SUBDIR_NAME = "masks";
 static const QStringList EXTENSION_FILTERS = { "*.png", "*.jpg", "*.jpeg" };
 
 
@@ -41,7 +40,7 @@ void FileManager::openFile(const QString &file)
     QString mask_filename = url.fileName();
     mask_filename.replace("jpg", "png");
     mask_filename.replace("jpeg", "png");
-    mask_filename = QString(MASKS_SUBDIR_NAME + "/" + mask_filename);
+    mask_filename = QString(m_masks_subdir_path + "/" + mask_filename);
 
     QString mask_path = file;
     setMaskLoadingPath(mask_path.replace(url.fileName(), mask_filename));
@@ -73,12 +72,12 @@ void FileManager::openDir(const QString &dir)
 
     // If there is no "masks" subdir in the opened dir - create it.
     auto subdirs = imageFolder.entryList(QDir::Dirs);
-    if (subdirs.empty() || subdirs.indexOf(MASKS_SUBDIR_NAME) < 0)
+    if (subdirs.empty() || subdirs.indexOf(m_masks_subdir_path) < 0)
     {
-        imageFolder.mkdir(MASKS_SUBDIR_NAME);
+        imageFolder.mkdir(m_masks_subdir_path);
     }
 
-    setMaskLoadingPath(dirPath + "/" + MASKS_SUBDIR_NAME + "/");
+    setMaskLoadingPath(dirPath + "/" + m_masks_subdir_path + "/");
 
     for (const auto file : availableFiles)
     {
@@ -148,6 +147,11 @@ QString FileManager::maskSavingPath() const
     return m_maskSavingPath;
 }
 
+QString FileManager::maskSubfolderRelPath() const
+{
+    return m_masks_subdir_path;
+}
+
 void FileManager::setMaskSavingPath(QString maskSavingPath)
 {
     if (m_maskSavingPath == maskSavingPath)
@@ -155,6 +159,15 @@ void FileManager::setMaskSavingPath(QString maskSavingPath)
 
     m_maskSavingPath = maskSavingPath;
     emit maskSavingPathChanged(m_maskSavingPath);
+}
+
+void FileManager::setMaskSubfolderRelPath(QString maskSubfolderRelPath)
+{
+    if (m_masks_subdir_path == maskSubfolderRelPath)
+        return;
+
+    m_masks_subdir_path = maskSubfolderRelPath;
+    emit maskSubfolderRelPathChanged(m_masks_subdir_path);
 }
 
 void FileManager::setImageFileName(QString imageFileName)

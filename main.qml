@@ -69,8 +69,14 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
 
+        maskSubfolderPath: fileManager.maskSubfolderRelPath
+
         onSaveClicked: {
             drawer.saveMask();
+        }
+
+        onMaskSubdirEntered: {
+            fileManager.setMaskSubfolderRelPath(path);
         }
     }
 }
