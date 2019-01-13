@@ -65,8 +65,8 @@ signals:
     void currentImageIndexChanged(int currentImageNumber);
     void maskLoadingPathChanged(QString maskLoadingPath);
     void imageFileNameChanged(QString imageFileName);
-
     void maskSavingPathChanged(QString maskSavingPath);
+    void newFileIsAboutToBeLoaded();
 
 private:
     bool writeModelToFile(const QString& filename);

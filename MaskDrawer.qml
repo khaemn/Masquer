@@ -19,7 +19,14 @@ Item {
     readonly property int _selectionButton: Qt.LeftButton
     readonly property int _unselectionButton: Qt.RightButton
 
+    property bool wasMaskEdited: false
+
     function saveMask() {
+        if (!wasMaskEdited) {
+            return;
+        }
+        wasMaskEdited = false;
+
         console.log("Saving mask to", root.manager.maskLoadingPath);
         _maskArea.save(root.manager.maskSavingPath);
     }
@@ -117,11 +124,13 @@ Item {
         }
 
         function _drawLine(_ctx) {
+            root.wasMaskEdited = true;
             _ctx.lineTo(curr.x, curr.y);
             _ctx.stroke();
         }
 
         function _eraseLine(_ctx) {
+            root.wasMaskEdited = true;
             _ctx.globalCompositeOperation = 'destination-out'
             _ctx.beginPath()
             _ctx.moveTo(prev.x, prev.y)
@@ -253,8 +262,31 @@ Item {
         }
 
         onWheel: {
-            root.brushRadius = Math.max(10, Math.min(100, root.brushRadius + (wheel.angleDelta.y / 12)));
-            _cursorField.drawCursor(mouseX, mouseY);
+            // Shift+wheel changes opacity of the overlapped mask
+            if (wheel.modifiers & Qt.ShiftModifier) {
+                _maskArea.opacity = Math.max(0.1, Math.min(0.9, _maskArea.opacity + (wheel.angleDelta.y / 1200)));
+                return;
+            }
+            // Ctrl+wheel changes cursor size
+            if (wheel.modifiers & Qt.ControlModifier) {
+                root.brushRadius = Math.max(10, Math.min(100, root.brushRadius + (wheel.angleDelta.y / 12)));
+                _cursorField.drawCursor(mouseX, mouseY);
+                return;
+            }
+
+            // Wheel without modifiers changes image.
+            if (wheel.angleDelta.y < 0) {
+                manager.loadNextImage();
+            } else {
+                manager.loadPrevImage();
+            }
+        }
+    }
+
+    Connections {
+        target: root.manager
+        onNewFileIsAboutToBeLoaded: {
+            saveMask();
         }
     }
 }

@@ -26,6 +26,8 @@ void FileManager::openFile(const QString &file)
         return;
     }
 
+    emit newFileIsAboutToBeLoaded();
+
     auto url = QUrl(file);
     auto path = url.toLocalFile();
 
