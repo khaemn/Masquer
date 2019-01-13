@@ -38,8 +38,8 @@ void FileManager::openFile(const QString &file)
     qDebug() << "Loaded an image " << path << " with size " << width << "x" << height;
 
     QString mask_filename = url.fileName();
-    mask_filename.replace("jpg", "png");
-    mask_filename.replace("jpeg", "png");
+    //mask_filename.replace("jpg", "png");
+    //mask_filename.replace("jpeg", "png");
     mask_filename = QString(m_masks_subdir_path + "/" + mask_filename);
 
     QString mask_path = file;
