@@ -35,6 +35,13 @@ Item {
         console.log("Loading mask from", root.manager.maskLoadingPath);
         _maskArea.unloadImage(root.manager.maskLoadingPath);
         _maskArea.loadImage(root.manager.maskLoadingPath);
+        _maskArea.loadMask()
+    }
+
+    function reloadMask() {
+        _maskArea.unloadImage(root.manager.maskLoadingPath);
+        _maskArea.loadImage(root.manager.maskLoadingPath);
+        _maskArea.loadMask();
     }
 
     Image {
@@ -54,7 +61,7 @@ Item {
         onStatusChanged: {
             if (status === Image.Ready) {
                 root._statusText = "Loaded\n"
-                        + source
+                        + manager.visiblePath
                         + "\n" + sourceSize.width + "x" + sourceSize.height
                 loadMask();
             }
@@ -269,7 +276,7 @@ Item {
             }
             // Ctrl+wheel changes cursor size
             if (wheel.modifiers & Qt.ControlModifier) {
-                root.brushRadius = Math.max(10, Math.min(100, root.brushRadius + (wheel.angleDelta.y / 12)));
+                root.brushRadius = Math.max(10, Math.min(200, root.brushRadius + (wheel.angleDelta.y / 12)));
                 _cursorField.drawCursor(mouseX, mouseY);
                 return;
             }

@@ -75,6 +75,10 @@ ApplicationWindow {
             drawer.saveMask();
         }
 
+        onReloadClicked: {
+            drawer.reloadMask();
+        }
+
         onMaskSubdirEntered: {
             fileManager.setMaskSubfolderRelPath(path);
         }

@@ -16,6 +16,8 @@ class FileManager : public QObject
     /// Original image file path
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(QString imageFileName READ imageFileName WRITE setImageFileName NOTIFY imageFileNameChanged)
+    Q_PROPERTY(QString visiblePath READ visiblePath NOTIFY visiblePathChanged)
+
     /// Image mask (grayscale image) file paths. Until the Canvas does
     /// the saving itself, it needs another path format, then the loading path.
     // TODO: it is idiotic situation, needs to be fixed asap.
@@ -59,6 +61,8 @@ public:
 
     QString maskSubfolderRelPath() const;
 
+    QString visiblePath() const;
+
 public slots:
     void setMaskSavingPath(QString maskSavingPath);
 
@@ -74,8 +78,8 @@ signals:
     void imageFileNameChanged(QString imageFileName);
     void maskSavingPathChanged(QString maskSavingPath);
     void newFileIsAboutToBeLoaded();
-
     void maskSubfolderRelPathChanged(QString maskSubfolderRelPath);
+    void visiblePathChanged(QString visiblePath);
 
 private:
     bool writeModelToFile(const QString& filename);
@@ -92,6 +96,7 @@ private:
     QString m_imageFileName;
     QString m_maskSavingPath;
     QString m_masks_subdir_path = "masks";
+    QString m_visiblePath;
 };
 
 #endif // FILEMANAGER_H

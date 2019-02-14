@@ -10,6 +10,7 @@ Rectangle {
     id: root
 
     signal saveClicked
+    signal reloadClicked
     signal maskSubdirEntered(string path)
 
     property string maskSubfolderPath
@@ -30,6 +31,18 @@ Rectangle {
 
             onClicked: {
                 root.saveClicked();
+            }
+        }
+
+        Button {
+            id: reloadMaskBtn
+            text: "Reload Mask"
+            Layout.maximumWidth: 100
+            height: root.height
+            font.pixelSize: 12
+
+            onClicked: {
+                root.reloadClicked();
             }
         }
 

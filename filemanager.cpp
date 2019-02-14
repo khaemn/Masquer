@@ -35,7 +35,14 @@ void FileManager::openFile(const QString &file)
     const int height = sizeOfImage.height();
     const int width = sizeOfImage.width();
 
-    qDebug() << "Loaded an image " << path << " with size " << width << "x" << height;
+    constexpr int maxlen = 60;
+    m_visiblePath = path;
+    if (m_visiblePath.length() > maxlen) {
+        m_visiblePath = path.mid(m_visiblePath.length() - maxlen, maxlen).prepend("...");
+        emit visiblePathChanged(m_visiblePath);
+    }
+
+    qDebug() << "Loaded an image " << m_visiblePath << " with size " << width << "x" << height;
 
     QString mask_filename = url.fileName();
     //mask_filename.replace("jpg", "png");
@@ -150,6 +157,11 @@ QString FileManager::maskSavingPath() const
 QString FileManager::maskSubfolderRelPath() const
 {
     return m_masks_subdir_path;
+}
+
+QString FileManager::visiblePath() const
+{
+    return m_visiblePath;
 }
 
 void FileManager::setMaskSavingPath(QString maskSavingPath)

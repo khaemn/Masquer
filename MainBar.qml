@@ -95,6 +95,8 @@ Rectangle {
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             font.pixelSize: 12
+            elide: Text.ElideRight
+            maximumLineCount: 3
         }
 
         Button {
